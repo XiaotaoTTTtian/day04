@@ -35,6 +35,11 @@
           <tr>
             <td colspan="5" style="text-align: center" v-if="list.length<=0">暂无数据</td>
           </tr>
+          <tr style="background-color: #EEE" v-if="list.length>0">
+     <td>统计:</td>
+     <td colspan="2">总价钱为: {{ allPrice }}</td>
+     <td colspan="2">平均价: {{ avgPrice }}</td>
+</tr>
         </tfoot> 
           
       </table>
@@ -64,7 +69,7 @@
         </div>
         &nbsp;&nbsp;&nbsp;&nbsp;
         <!-- 阻止表单提交 -->
-        <button class="btn btn-primary" @click="addBtn">添加资产</button>
+        <button class="btn btn-primary" @click.prevent="addBtn">添加资产</button>
       </form>
     </div>
   </div>
@@ -77,12 +82,7 @@ export default {
     return {
       name: "", // 名称
       price: 0, // 价格
-      list: [
-        { id: 100, name: "外套", price: 199, time: new Date('2010-08-12')},
-        { id: 101, name: "裤子", price: 34, time: new Date('2013-09-01') },
-        { id: 102, name: "鞋", price: 25.4, time: new Date('2018-11-22') },
-        { id: 103, name: "头发", price: 19900, time: new Date('2020-12-12') }
-      ],
+      list:JSON.parse(localStorage.getItem('plist'))||[],
     };
   },
   methods:{
@@ -124,6 +124,28 @@ export default {
         var result = year + "-"+ month +"-"+ date +" "+ hour +":"+ minute +":" + second;
         // 返回
         return result;
+    }
+  },
+  computed:{
+    // commodity price
+    allPrice(){
+      let sum=0;
+      this.list.forEach(obj=>{
+        sum +=obj.price
+      })
+      return sum
+    },
+    // middle rate
+    avgPrice(){
+      let avg=(this.allPrice/this.list.length).toFixed(2);
+      return avg
+    }
+  },
+  watch:{
+    'list':{
+      handler(){
+        localStorage.setItem('plist',JSON.stringify(this.list))
+      }
     }
   }
 
